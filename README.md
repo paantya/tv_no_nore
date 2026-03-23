@@ -31,7 +31,7 @@
 *   `9445` — MTProto Proxy #3
 *   `8443` — SOCKS5 Proxy
 *   `9090` — Prometheus
-*   `3000` — Grafana
+*   `3000` — Grafana (Дашборд "MTG Infrastructure" доступен сразу)
 
 ## Мониторинг
 
