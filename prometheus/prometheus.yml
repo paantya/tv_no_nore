@@ -9,16 +9,22 @@ rule_files:
 scrape_configs:
   - job_name: 'mtg'
     metrics_path: '/'
+
     static_configs:
       - targets: ['mtg_1:3129']
         labels:
           alias: 'mtg_1'
           env: 'prod'
+          server: 'p5'
+
       - targets: ['mtg_2:3129']
         labels:
           alias: 'mtg_2'
           env: 'prod'
+          server: 'p5'
+
       - targets: ['mtg_3:3129']
         labels:
           alias: 'mtg_3'
           env: 'prod'
+          server: 'p5'
