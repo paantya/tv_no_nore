@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  mtg_1:
+    image: nineseconds/mtg:2.2.3
+    restart: unless-stopped
+    ports:
+      - "9443:3128"
+    volumes:
+      - ./generated/config-1.toml:/config.toml:ro
+
+  mtg_2:
+    image: nineseconds/mtg:2.2.3
+    restart: unless-stopped
+    ports:
+      - "9444:3128"
+    volumes:
+      - ./generated/config-2.toml:/config.toml:ro
+
+  mtg_3:
+    image: nineseconds/mtg:2.2.3
+    restart: unless-stopped
+    ports:
+      - "9445:3128"
+    volumes:
+      - ./generated/config-3.toml:/config.toml:ro
+
+  socks5:
+    image: serjs/go-socks5-proxy:latest
+    restart: always
+    ports:
+      - "8443:1080"
+    environment:
+      PROXY_USER: ${SOCKS5_USER}
+      PROXY_PASSWORD: ${SOCKS5_PASSWORD}
+
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
+volumes:
+  prometheus-data:
+  grafana-data:

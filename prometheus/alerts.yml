@@ -1,0 +1,29 @@
+groups:
+  - name: mtg-alerts
+    rules:
+      - alert: MTGDown
+        expr: up{job="mtg"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MTG instance {{ $labels.alias }} is down"
+          description: "Instance {{ $labels.alias }} has been down for more than 1 minute."
+
+      - alert: MTGNoClientConnections
+        expr: sum by(alias) (mtg_client_connections{job="mtg"}) == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MTG instance {{ $labels.alias }} has no connections"
+          description: "Instance {{ $labels.alias }} has 0 active client connections for more than 5 minutes."
+
+      - alert: MTGReplayAttacksDetected
+        expr: increase(mtg_replay_attacks{job="mtg"}[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Replay attacks detected on {{ $labels.alias }}"
+          description: "Replay attacks detected on instance {{ $labels.alias }} in the last 15 minutes."
